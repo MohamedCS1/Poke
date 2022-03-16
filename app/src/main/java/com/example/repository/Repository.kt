@@ -2,7 +2,7 @@ package com.example.repository
 
 import com.example.network.PokemonApiService
 import com.example.pojo.PokemonResponse
-import io.reactivex.Observable
+import io.reactivex.rxjava3.core.Observable
 import javax.inject.Inject
 
 class Repository {
