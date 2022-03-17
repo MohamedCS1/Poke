@@ -1,5 +1,6 @@
 package com.example.Adapters
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
@@ -11,23 +12,21 @@ import com.bumptech.glide.Glide
 import com.example.pojo.Pokemon
 import com.example.poke.R
 
-class AdapterPokemons:RecyclerView.Adapter<AdapterPokemons.PokemonViewHolder>() {
+class AdapterPokemons(val context:Context):RecyclerView.Adapter<AdapterPokemons.PokemonViewHolder>() {
 
     var arrayofPokemons = arrayListOf<Pokemon>()
-    lateinit var context:Context
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PokemonViewHolder {
-        context = parent.context
-        return PokemonViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.card_pokemon,null ,false))
+        return PokemonViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.card_pokemon,parent ,false))
     }
 
     override fun onBindViewHolder(holder: PokemonViewHolder, position: Int) {
         holder.name.text = arrayofPokemons[position].name
-        Glide.with(context).load(arrayofPokemons[position].url).into(holder.image)
+        Glide.with(context).load(arrayofPokemons[position].url).placeholder(R.drawable.ic_launcher_background).into(holder.image)
     }
 
     override fun getItemCount(): Int {
-        TODO("Not yet implemented")
+        return arrayofPokemons.size
     }
 
     class PokemonViewHolder(itemView:View):RecyclerView.ViewHolder(itemView)
@@ -36,8 +35,10 @@ class AdapterPokemons:RecyclerView.Adapter<AdapterPokemons.PokemonViewHolder>() 
         val name = itemView.findViewById<TextView>(R.id.tv_name_pokemon)
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     fun setList(list:ArrayList<Pokemon>)
     {
         this.arrayofPokemons = list
+        notifyDataSetChanged()
     }
 }
