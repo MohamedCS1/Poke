@@ -2,6 +2,8 @@ package com.example.poke
 
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.drawable.BitmapDrawable
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
@@ -10,11 +12,16 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import coil.ImageLoader
+import coil.request.ImageRequest
+import coil.request.SuccessResult
 import com.example.Adapters.AdapterPokemons
 import com.example.pojo.Pokemon
 import com.example.viewmodels.PokemonsViewModel
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.*
+import okhttp3.internal.wait
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
@@ -53,6 +60,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    @OptIn(DelicateCoroutinesApi::class)
     fun setupSwipe()
     {
         val callback:ItemTouchHelper.SimpleCallback = object :ItemTouchHelper.SimpleCallback(0 ,ItemTouchHelper.RIGHT){
@@ -67,14 +75,32 @@ class MainActivity : AppCompatActivity() {
             @SuppressLint("NotifyDataSetChanged")
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                 val position = viewHolder.adapterPosition
-                val swipedPokemon = adapter.getPokemonAt(position)
-                viewModel.InsertPokemon(swipedPokemon)
+                val getPokemonAtPosition = adapter.getPokemonAt(position)
+                val pokemonName = getPokemonAtPosition.name
+                val pokemonImageUrl = getPokemonAtPosition.url
+
+                GlobalScope.launch {
+                    val pokemonImage = async {getBitmap(pokemonImageUrl)}
+                    viewModel.InsertPokemon(Pokemon(0,pokemonName ,pokemonImageUrl , pokemonImage.await()))
+                }
                 adapter.notifyDataSetChanged()
+
                 Toast.makeText(this@MainActivity ,"Pokemon added to database" ,Toast.LENGTH_LONG).show()
             }
         }
 
         val itemTouchHelper = ItemTouchHelper(callback)
         itemTouchHelper.attachToRecyclerView(rv)
+    }
+
+    suspend fun getBitmap(url:String):Bitmap
+    {
+        val loading = ImageLoader(this)
+        val request = ImageRequest.Builder(this)
+            .data(url)
+            .build()
+
+        val result = (loading.execute(request) as SuccessResult).drawable
+        return (result as BitmapDrawable).bitmap
     }
 }

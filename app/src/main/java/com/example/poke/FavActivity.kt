@@ -9,6 +9,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.Adapters.AdapterFav
 import com.example.Adapters.AdapterPokemons
 import com.example.pojo.Pokemon
 import com.example.viewmodels.PokemonsViewModel
@@ -17,7 +18,7 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class FavActivity : AppCompatActivity() {
 
-    lateinit var adapter: AdapterPokemons
+    lateinit var adapter: AdapterFav
 
     lateinit var viewModel: PokemonsViewModel
 
@@ -28,7 +29,7 @@ class FavActivity : AppCompatActivity() {
 
         rv = findViewById<RecyclerView>(R.id.rv_fav)
 
-        adapter = AdapterPokemons(this)
+        adapter = AdapterFav(this)
 
         viewModel = ViewModelProvider(this)[PokemonsViewModel::class.java]
 
