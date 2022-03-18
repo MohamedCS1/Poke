@@ -29,6 +29,11 @@ class AdapterPokemons(val context:Context):RecyclerView.Adapter<AdapterPokemons.
         return arrayofPokemons.size
     }
 
+    fun getPokemonAt(position: Int): Pokemon
+    {
+        return arrayofPokemons[position]
+    }
+
     class PokemonViewHolder(itemView:View):RecyclerView.ViewHolder(itemView)
     {
         val image = itemView.findViewById<ImageView>(R.id.imgeview_pokemon)
